@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EstimPro - Calculs & Devis</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+ <!-- Favicon Links -->
+    <link rel="icon" href="images/favicon.png" type="image/png"> 
+    <!-- Ou si vous avez un .ico : -->
+    <!-- <link rel="icon" href="images/favicon.ico" type="image/x-icon"> -->
+    <!-- <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon"> -->
+
+    <!-- Pour une meilleure compatibilité avec les appareils Apple -->
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <style>
+        :root {
+            --primary: #2563eb; /* Bleu principal */
+            --primary-dark: #1d4ed8; /* Bleu foncé */
+            --secondary: #64748b; /* Gris secondaire */
+            --secondary-dark: #475569; /* Gris foncé */
+            --success: #10b981; /* Vert succès */
+            --danger: #ef4444; /* Rouge danger */
+            --warning: #f59e0b; /* Jaune avertissement */
+            --light: #f8fafc; /* Gris très clair (fond de carte léger) */
+            --extralight: #f1f5f9; /* Gris encore plus clair (fond de body) */
+            --dark: #1e293b; /* Texte foncé principal */
+            --border: #cbd5e1; /* Bordure standard */
+            --border-light: #e2e8f0; /* Bordure légère */
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; color: var(--dark); line-height: 1.6; background-color: var(--extralight); font-size: 16px; padding-bottom: 80px; /* Espace pour le footer fixe */ }
+        .container { max-width: 1200px; margin: 0 auto; padding: 1rem; }
+        
+        header { background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.05); padding: 0.75rem 0; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-light); }
+        .header-content { display: flex; justify-content: space-between; align-items: center; }
+        .logo-container { display: flex; align-items: center; text-decoration: none; flex-shrink: 0; /* Empêche le logo de rétrécir excessivement */ }
+        img.site-logo { /* Ciblage spécifique pour le logo du header */
+            width: 50px;  /* Taille de base pour mobile */
+            height: 50px;
+            border-radius: 6px; 
+            margin-right: 10px;
+            object-fit: contain; /* Assure que l'image s'adapte sans être déformée */
+        }
+        header h1 { 
+            font-size: 1.2rem; /* Taille de base pour mobile */
+            color: var(--primary); 
+            font-weight: 600; 
+            line-height: 1.2;
+            margin: 0; /* Retirer la marge par défaut des h1 */
+            flex-grow: 1; /* Permet au titre de prendre l'espace */
+        }
+
+        .top-nav { display: flex; gap: 0.75rem; margin-left: auto; /* Pousse la nav à droite par défaut */ flex-shrink: 0;}
+        .btn { display: inline-flex; align-items: center; justify-content: center; padding: 0.6rem 1.2rem; background-color: var(--primary); color: white; border: none; border-radius: 0.3rem; font-size: 0.95rem; cursor: pointer; text-decoration: none; transition: background-color 0.2s, box-shadow 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .btn:hover { background-color: var(--primary-dark); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .btn i { margin-right: 0.5rem; }
+        .btn.secondary { background-color: var(--secondary); }
+        .btn.secondary:hover { background-color: var(--secondary-dark); }
+        .btn.small { padding: 0.4rem 0.8rem; font-size: 0.85rem; }
+        
+        .tabs-container { /* Conteneur pour les onglets du haut */
+            background-color: white; 
+            border-radius: 0.5rem; 
+            margin-bottom: 1.5rem; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            overflow: hidden; /* Pour que le border-radius s'applique bien */
+        }
+        .tabs { display: flex; flex-wrap: nowrap; /* Empêcher le retour à la ligne pour le défilement */ overflow-x: auto; /* Permettre le défilement horizontal si nécessaire */ -webkit-overflow-scrolling: touch; /* Pour un défilement fluide sur iOS */ }
+        .tab { flex: 0 0 auto; /* Ne pas grandir, ne pas rétrécir, base sur contenu */ min-width: 100px; text-align: center; padding: 0.9rem 0.75rem; cursor: pointer; font-weight: 500; font-size:0.85rem; border-bottom: 3px solid transparent; color: var(--secondary-dark); transition: background-color 0.2s, color 0.2s, border-color 0.2s; white-space: nowrap; /* Empêcher le texte de l'onglet de passer à la ligne */ }
+        .tab:hover { background-color: var(--extralight); color: var(--primary); }
+        .tab.active { border-bottom-color: var(--primary); color: var(--primary); background-color: #eef2ff; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        .card { background-color: white; border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.06); margin-bottom: 1.5rem; padding: 1.5rem; }
+        h2 { font-size: 1.5rem; color: var(--primary-dark); margin-bottom: 1rem; border-bottom: 1px solid var(--border-light); padding-bottom: 0.5rem;}
+        h3 { font-size: 1.2rem; color: var(--dark); margin-bottom: 1rem; font-weight: 600;}
+        h4 { font-size: 1rem; color: var(--secondary-dark); margin-top:1.5rem; margin-bottom:0.75rem; font-weight:600;}
+        
+        .form-group { margin-bottom: 1rem; }
+        label { display: block; margin-bottom: 0.4rem; font-weight: 500; font-size: 0.9rem; color: var(--secondary-dark); }
+        input, select, textarea { width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: 0.3rem; font-size: 0.95rem; transition: border-color 0.2s, box-shadow 0.2s; }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(var(--primary), 0.1); outline: none; }
+        input[type="number"] { padding-right: 0.3rem; }
+        
+        .input-group { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .input-group .form-group { flex: 1; min-width: 200px; }
+        
+        .results-display { background-color: var(--light); padding: 1rem; border-radius: 0.3rem; margin-top: 1rem; border: 1px solid var(--border-light); }
+        .results-display p { margin-bottom: 0.5rem; font-size: 0.95rem; }
+        .results-display strong { color: var(--primary); font-weight: 600; }
+        .results-display .memo-section { margin-top: 1rem; padding-top: 0.75rem; border-top: 1px dashed var(--border); text-align: right;}
+
+        .btn-row { display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; flex-wrap: wrap; gap: 0.5rem; }
+        
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        th, td { padding: 0.6rem 0.75rem; text-align: left; border-bottom: 1px solid var(--border-light); vertical-align: top; }
+        th { background-color: var(--light); font-weight: 600; color: var(--secondary-dark); }
+        td .description-details { font-size: 0.8rem; color: var(--secondary); display: block; margin-top: 0.2rem; }
+        .delete-btn { background-color: var(--danger); }
+        
+        .notification { position: fixed; bottom: 80px; /* Ajusté pour le footer */ right: 20px; padding: 12px 20px; background-color: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transform: translateY(120px); opacity: 0; transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55); z-index: 1000; max-width: 400px; }
+        .notification.show { transform: translateY(0); opacity: 1; }
+        .notification-content { display: flex; align-items: center; } .notification-content i { margin-right: 10px; font-size: 1.2rem; }
+        .notification.success { background-color: #f0fff4; border-left: 4px solid var(--success); } .notification.success i { color: var(--success); }
+        .notification.warning { background-color: #fffbe6; border-left: 4px solid var(--warning); } .notification.warning i { color: var(--warning); }
+        .notification.info { background-color: #eef2ff; border-left: 4px solid var(--primary); } .notification.info i { color: var(--primary); }
+
+        .site-shortcuts-container { margin-top: 20px; padding: 15px; background-color: var(--light); border-radius: 8px; }
+        .site-shortcuts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .site-shortcut { background-color: white; color: var(--dark); border: 1px solid var(--border); border-radius: 4px; padding: 8px 12px; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; min-width: 90px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 0 0 auto; }
+        .site-shortcut:hover { background-color: var(--primary-dark); color: white; transform: translateY(-2px); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+
+        .search-history-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background-color: white; border: 1px solid var(--border-light); border-radius: 4px; margin-bottom: 5px; }
+        .search-history-term { font-weight: 500; font-size: 0.9rem; }
+        .search-history-actions { display: flex; gap: 5px; }
+        .search-history-button { background: none; border: none; color: var(--primary); cursor: pointer; font-size: 0.9rem; }
+        .search-history-button:hover { color: var(--primary-dark); }
+        
+        .calculator-selector { margin-bottom: 1.5rem; }
+        .calculator-form-container { padding: 1rem; border: 1px solid var(--border-light); border-radius: 0.3rem; background-color: #fdfdff; min-height: 200px;}
+        .calculator-form { display: none; } .calculator-form.active { display: block; }
+        .calculator-form small { font-size: 0.8rem; color: var(--secondary-dark); margin-top: -0.5rem; display: block; }
+
+        #calculatedQuantitiesTable th, #calculatedQuantitiesTable td { padding: 0.5rem 0.75rem; }
+        #calculatedQuantitiesTable .calc-item-desc { font-weight: 500;}
+        #calculatedQuantitiesTable .calc-item-results { font-size: 0.9rem; white-space: pre-line; }
+        
+        /* Hidden file inputs */
+        .hidden-file-input { display: none; }
+        .estimate-section { margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-light); }
+        .estimate-section:last-child { border-bottom: none; margin-bottom: 0; }
+        .estimate-section h3 { font-size: 1.1rem; color: var(--secondary-dark); margin-bottom: 0.5rem; }
+        .estimate-section p { margin-bottom: 0.3rem; font-size: 0.95rem; }
+        .estimate-section p strong { color: var(--dark); }
+        
+        /* Footer styles */
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--dark); 
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+            z-index: 999;
+            padding: 0.5rem 0;
+        }
+        .footer-tabs {
+            display: flex;
+            justify-content: space-around; 
+            max-width: 1200px; 
+            margin: 0 auto;
+        }
+        .footer-tab {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 0.25rem;
+            font-size: 0.7rem; 
+            color: var(--light);
+            cursor: pointer;
+            text-decoration: none;
+            border-top: 3px solid transparent; 
+            transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+        }
+        .footer-tab i {
+            font-size: 1.2rem; 
+            margin-bottom: 0.2rem;
+        }
+        .footer-tab:hover {
+            background-color: var(--secondary-dark);
+            color: white;
+        }
+        .footer-tab.active {
+            border-top-color: var(--primary);
+            color: var(--primary);
+            background-color: #2c3e50; 
+        }
+        /* Styles pour la notice d'utilisation */
+        .notice-content ul { list-style: disc; margin-left: 20px; margin-bottom: 1rem;}
+        .notice-content li { margin-bottom: 0.5rem; }
+        .notice-content strong { color: var(--primary-dark); }
+        .notice-content h4 { margin-top: 1rem; margin-bottom: 0.5rem; font-size: 1.1rem; color: var(--primary);}
+
+
+        /* Print styles */
+        .print-only { display: none; } 
+        @media print {
+            body { background-color: white; font-size: 11pt; color: black; -webkit-print-color-adjust: exact; print-color-adjust: exact; padding-bottom: 0; }
+            header, .tabs-container, .top-nav .btn:not(#printEstimatePdfBtn), 
+            .btn-row button:not(#printEstimatePdfBtn), 
+            .calculator-selector, .site-shortcuts-container, #searchHistoryContainer, 
+            .card h3 + p, .form-group label + small,
+            #synthesis, #search, #surfaces, #calculators, #help, 
+            .memo-section, .notification, .top-nav, footer 
+            { display: none !important; }
+
+            .print-only { display: block !important; } 
+            #printLogoContainer { text-align: right; margin-bottom: 1cm; }
+            #printLogoContainer img { max-width: 120px; max-height: 60px; } 
+            main.container { margin-top: 0 !important; }
+            .tab-content, .card { box-shadow: none !important; border: none !important; margin: 0 !important; padding: 0 !important; page-break-inside: avoid; }
+            .container { max-width: 100%; padding: 0; margin: 0; }
+            #estimate { display: block !important; } 
+            #estimate > .card { padding: 20mm 15mm !important; } 
+            h1, h2, h3 { color: black !important; margin-bottom: 0.5cm; }
+            h2 { font-size: 1.6em; text-align: center; border-bottom: 2px solid black; padding-bottom: 0.3cm;} 
+            #estimate .estimate-section h3 { font-size: 1.15em; margin-top: 0.8cm; border-bottom: 1px dashed #666; padding-bottom: 0.2cm;}
+            #estimate .estimate-section p { font-size: 10pt; }
+            table { font-size: 9.5pt; width:100% !important; margin-top: 0.3cm; page-break-inside: auto; border: 1px solid #bbb !important; }
+            tr { page-break-inside: avoid; page-break-after: auto; }
+            thead { display: table-header-group; } 
+            th, td { border: 1px solid #bbb !important; padding: 4px 6px !important;}
+            th { background-color: #eaeaea !important; font-weight: bold; }
+            #materialSubtotal, #totalEstimate { font-weight: bold !important; font-size: 1.1em;}
+            a[href]::after { content: ""; } 
+            td .description-details { display: none !important; } 
+            .btn#printEstimatePdfBtn { display: none !important; } 
+            #printCalculatedQuantitiesTable th, #printCalculatedQuantitiesTable td { font-size: 9pt; }
+            #printRoomSurfaceSection p { display: inline-block; margin-right: 20px;} 
+        }
+
+        /* Responsive Design Adjustments */
+        @media (min-width: 769px) { img.site-logo { width: 70px; height: 70px; } header h1 { font-size: 1.75rem; } .tab {font-size: 0.9rem;} }
+        @media (min-width: 1024px) { img.site-logo { width: 80px; height: 80px; } header h1 { font-size: 2rem; } .tab {font-size: 1rem;} }
+        @media (max-width: 768px) { body { font-size: 15px; } header h1 { font-size: 1.4rem; } .input-group { flex-direction: column; gap: 0rem; } .input-group .form-group { min-width: 100%; margin-bottom: 1rem; } .tabs-container .tabs { justify-content: flex-start; } .tab { min-width: 100px; font-size: 0.8rem; padding: 0.8rem 0.4rem;} }
+        @media (max-width: 600px) { .header-content { flex-direction: column; align-items: flex-start; } .logo-container { margin-bottom: 0.5rem; width:100%; } header h1 { font-size: 1.3rem; text-align: left; } .top-nav { width: 100%; justify-content: flex-start; margin-top: 0.5rem; gap: 0.5rem;} .footer-tabs { padding: 0 0.5rem;} .footer-tab span { display: none; } .footer-tab i { font-size: 1.5rem; margin-bottom: 0;} }
+        @media (max-width: 420px) { header h1 { font-size: 1.15rem; } .top-nav { flex-direction: column; align-items: stretch; } .top-nav .btn { width: 100%; justify-content: center; margin-bottom: 0.3rem;} .tabs .tab { padding: 0.7rem 0.3rem; font-size: 0.75rem; min-width: 80px;} .btn { padding: 0.5rem 0.8rem; font-size: 0.85rem; } .btn.small { padding: 0.3rem 0.6rem; font-size: 0.75rem; } }
+    </style>
+</head>
+<body>
+   <header>
+    <div class="container header-content">
+        <a href="#" class="logo-container" onclick="document.querySelector('#mainTabs .tab[data-tab=\'surfaces\']').click(); return false;">
+            <img src="images/Logo-EstimPro.png" alt="Logo EstimPro" class="site-logo">
+            <h1>EstimPro</h1>
+        </a>
+        <nav class="top-nav">
+            <button id="newProjectBtn" class="btn secondary small" title="Effacer toutes les données et commencer un nouveau projet"><i class="fas fa-plus"></i> Nouveau Projet</button>
+            <button id="loadProjectBtn" class="btn secondary small" title="Charger un projet depuis un fichier JSON"><i class="fas fa-folder-open"></i> Charger Projet</button>
+            <button id="saveProjectJsonBtn" class="btn small" title="Enregistrer le projet actuel dans un fichier JSON"><i class="fas fa-save"></i> Enregistrer Projet</button>
+        </nav>
+    </div>
+</header>
+    
+    <main class="container">
+        <input type="file" id="projectFileInput" class="hidden-file-input" accept=".json">
+        <input type="file" id="estimateFileInput" class="hidden-file-input" accept=".json">
+
+        <div class="tabs-container">
+            <div class="tabs" id="mainTabs">
+                <div class="tab active" data-tab="surfaces"><i class="fas fa-ruler-combined"></i> Surfaces Pièce</div>
+                <div class="tab" data-tab="calculators"><i class="fas fa-calculator"></i> Calculateurs Matériaux</div>
+                <div class="tab" data-tab="search"><i class="fas fa-search"></i> Recherche Produits</div>
+                <div class="tab" data-tab="synthesis"><i class="fas fa-clipboard-list"></i> Synthèse & Matériaux Devis</div>
+                <div class="tab" data-tab="estimate"><i class="fas fa-file-invoice-dollar"></i> Devis Estimatif</div>
+                <div class="tab" data-tab="help"><i class="fas fa-question-circle"></i> Aide / Notice</div>
+            </div>
+        </div>
+        
+        <div class="tab-content active" id="surfaces"> 
+            <div class="card">
+                <h2>Calcul des surfaces d'une pièce</h2>
+                <div class="form-group"><label for="roomName">Nom de la pièce</label><input type="text" id="roomName" placeholder="Ex: Salon..."></div>
+                <div class="form-group"><label for="roomType">Type</label><select id="roomType"><option value="other">Autre</option><option value="bathroom">SdB</option><option value="kitchen">Cuisine</option><option value="bedroom">Chambre</option><option value="livingroom">Salon</option></select></div>
+                <div class="input-group">
+                    <div class="form-group"><label for="length">Longueur (m)</label><input type="number" id="length" step="0.01" min="0"></div>
+                    <div class="form-group"><label for="width">Largeur (m)</label><input type="number" id="width" step="0.01" min="0"></div>
+                    <div class="form-group"><label for="height">Hauteur (m)</label><input type="number" id="height" step="0.01" min="0" value="2.50"></div>
+                </div>
+                <div class="btn-row"><button id="calculateSurfaceBtn" class="btn"><i class="fas fa-play"></i> Calculer</button></div>
+                <div id="surfaceResults" class="results-display" style="display:none;">
+                    <h3>Résultats pour "<span id="calculatedRoomName">Pièce</span>"</h3>
+                    <p>Surface au sol : <strong id="floorArea">0.00 m²</strong></p>
+                    <p>Surface des murs (brute) : <strong id="wallArea">0.00 m²</strong></p>
+                    <div class="btn-row" style="justify-content:flex-end;"><button id="saveAreaBtn" class="btn small"><i class="fas fa-check"></i> Mémoriser</button></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="calculators">
+             <div class="card">
+                <h2>Calculateurs de Quantités</h2>
+                <div class="form-group calculator-selector">
+                    <label for="calculatorType">Type de calcul :</label>
+                    <select id="calculatorType"><option value="">-- Sélectionner --</option><option value="concrete">Béton (Dalle)</option><option value="drywall">Plaques Plâtre</option><option value="paint">Peinture</option><option value="tiles">Carrelage+Colle/Joint</option><option value="flooring">Revêtement Sol</option><option value="insulationRoll">Isolant Rouleau</option><option value="insulationPanel">Isolant Panneau</option></select>
+                </div>
+                <div class="calculator-form-container">
+                    <div id="calculatorPlaceholder" style="text-align:center;padding:20px;color:var(--secondary);"><i class="fas fa-drafting-compass fa-2x" style="margin-bottom:10px;"></i><p>Sélectionnez un calculateur.</p></div>
+                    <div id="calcConcreteForm" class="calculator-form"><h3>Béton (Dalle)</h3><div class="input-group"><div class="form-group"><label for="concreteLength">Long. (m)</label><input type="number" id="concreteLength" step="0.01" min="0"></div><div class="form-group"><label for="concreteWidth">Larg. (m)</label><input type="number" id="concreteWidth" step="0.01" min="0"></div><div class="form-group"><label for="concreteThickness">Épaisseur (cm)</label><input type="number" id="concreteThickness" step="0.1" min="0"></div></div><button id="calculateConcreteBtn" class="btn"><i class="fas fa-play"></i> Calculer</button><div id="concreteResults" class="results-display" style="display:none;"></div></div>
+                    <div id="calcDrywallForm" class="calculator-form"><h3>Plaques Plâtre</h3><div class="form-group"><label for="drywallSurface">Surface (m²)</label><input type="number" id="drywallSurface" step="0.01" min="0"><small>Surface murs/plafonds.</small></div><div class="input-group"><div class="form-group"><label for="plateWidth">Larg. plaque (m)</label><input type="number" id="plateWidth" step="0.01" min="0" value="1.20"></div><div class="form-group"><label for="plateHeight">Haut. plaque (m)</label><input type="number" id="plateHeight" step="0.01" min="0" value="2.50"></div><div class="form-group"><label for="drywallWaste">Perte (%)</label><input type="number" id="drywallWaste" step="1" min="0" value="10"></div></div><button id="calculateDrywallBtn" class="btn"><i class="fas fa-play"></i> Calculer</button><div id="drywallResults" class="results-display" style="display:none;"></div></div>
+                    <div id="calcPaintForm" class="calculator-form"><h3>Peinture</h3><div class="form-group"><label for="paintSurface">Surface (m²)</label><input type="number" id="paintSurface" step="0.01" min="0"><small>Surface à peindre.</small></div><div class="input-group"><div class="form-group"><label for="paintCoats">Couches</label><input type="number" id="paintCoats" step="1" min="1" value="2"></div><div class="form-group"><label for="paintCoverage">Rendement (m²/L)</label><input type="number" id="paintCoverage" step="0.1" min="0" value="10"></div></div><button id="calculatePaintBtn" class="btn"><i class="fas fa-play"></i> Calculer</button><div id="paintResults" class="results-display" style="display:none;"></div></div>
+                    <div id="calcTilesForm" class="calculator-form"><h3>Carrelage + Colle & Joints</h3><div class="form-group"><label for="tileAreaSurface">Surface (m²)</label><input type="number" id="tileAreaSurface" step="0.01" min="0"></div><div class="input-group"><div class="form-group"><label for="tileWidthDim">Larg. carreau (cm)</label><input type="number" id="tileWidthDim" step="0.1" min="0"></div><div class="form-group"><label for="tileHeightDim">Long. carreau (cm)</label><input type="number" id="tileHeightDim" step="0.1" min="0"></div></div><div class="input-group"><div class="form-group"><label for="tileJointWidth">Larg. joint (mm)</label><input type="number" id="tileJointWidth" step="0.1" min="0" value="3"></div><div class="form-group"><label for="tileWaste">Perte carreaux (%)</label><input type="number" id="tileWaste" step="1" min="0" value="10"></div></div><h4>Colle & Joint (optionnel)</h4><div class="input-group"><div class="form-group"><label for="glueCoverage">Rendement colle (kg/m²)</label><input type="number" id="glueCoverage" step="0.1" min="0" value="4"><small>Ex: 3-6 kg/m².</small></div><div class="form-group"><label for="groutDensity">Densité joint (kg/L)</label><input type="number" id="groutDensity" step="0.1" min="0" value="1.6"><small>~1.6 pour poudre.</small></div></div><button id="calculateTilesBtn" class="btn"><i class="fas fa-play"></i> Calculer</button><div id="tilesResults" class="results-display" style="display:none;"></div></div>
+                    <div id="calcFlooringForm" class="calculator-form"><h3>Revêtement Sol (Parquet, PVC...)</h3><div class="form-group"><label for="floorAreaToCover">Surface au sol (m²)</label><input type="number" id="floorAreaToCover" step="0.01" min="0"></div><div class="input-group"><div class="form-group"><label for="flooringItemWidth">Larg. lame/dalle (m)</label><input type="number" id="flooringItemWidth" step="0.01" min="0"></div><div class="form-group"><label for="flooringItemLength">Long. lame/dalle (m)</label><input type="number" id="flooringItemLength" step="0.01" min="0"></div></div><div class="form-group"><label for="flooringWaste">Perte (%)</label><input type="number" id="flooringWaste" step="1" min="0" value="10"></div><button id="calculateFlooringBtn" class="btn"><i class="fas fa-play"></i> Calculer</button><div id="flooringResults" class="results-display" style="display:none;"></div></div>
+                    <div id="calcInsulationRollForm" class="calculator-form"><h3>Isolant en Rouleau</h3><div class="form-group"><label for="insRollArea">Surface à isoler (m²)</label><input type="number" id="insRollArea" step="0.01" min="0"></div><div class="input-group"><div class="form-group"><label for="rollWidth">Larg. rouleau (m)</label><input type="number" id="rollWidth" step="0.01" min="0" value="1.20"></div><div class="form-group"><label for="rollLength">Long. rouleau (m)</label><input type="number" id="rollLength" step="0.01" min="0" value="5.00"></div></div><div class="form-group"><label for="insRollWaste">Perte (%)</label><input type="number" id="insRollWaste" step="1" min="0" value="5"></div><button id="calculateInsRollBtn" class="btn"><i class="fas fa-play"></i> Calculer</button><div id="insRollResults" class="results-display" style="display:none;"></div></div>
+                    <div id="calcInsulationPanelForm" class="calculator-form"><h3>Isolant en Panneau</h3><div class="form-group"><label for="insPanelArea">Surface à isoler (m²)</label><input type="number" id="insPanelArea" step="0.01" min="0"></div><div class="input-group"><div class="form-group"><label for="panelWidth">Larg. panneau (m)</label><input type="number" id="panelWidth" step="0.01" min="0" value="0.60"></div><div class="form-group"><label for="panelLength">Long. panneau (m)</label><input type="number" id="panelLength" step="0.01" min="0" value="1.20"></div></div><div class="form-group"><label for="insPanelWaste">Perte (%)</label><input type="number" id="insPanelWaste" step="1" min="0" value="7"></div><button id="calculateInsPanelBtn" class="btn"><i class="fas fa-play"></i> Calculer</button><div id="insPanelResults" class="results-display" style="display:none;"></div></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="search"> 
+             <div class="card"> 
+                <h2>Recherche Produits en Ligne</h2>
+                <p>Les recherches ouvrent un nouvel onglet. Utilisez "Coller" pour l'ajout rapide ci-dessous.</p>
+                <div class="form-group">
+                    <label for="searchTerm">Terme</label>
+                    <div style="display:flex;gap:10px;">
+                        <input type="text" id="searchTerm" placeholder="Produit, marque..."><button id="performSearchButton" class="btn" title="Google"><i class="fab fa-google"></i></button>
+                    </div>
+                </div>
+                <div class="site-shortcuts-container">
+                    <h3>Raccourcis Fournisseurs</h3>
+                    <div id="siteShortcuts" class="site-shortcuts">
+                        <button class="site-shortcut" data-url="https://www.google.com/search?q=">Google</button>
+                        <button class="site-shortcut" data-url="https://www.leroymerlin.fr/recherche/">Leroy Merlin</button>
+                        <button class="site-shortcut" data-url="https://www.castorama.fr/search?term=">Castorama</button>
+                        <button class="site-shortcut" data-url="https://www.bricodepot.fr/search/?q=">Brico Dépôt</button>
+                        <button class="site-shortcut" data-url="https://www.manomano.fr/recherche/">ManoMano</button>
+                        <button class="site-shortcut" data-url="https://www.bricocash.fr/recherche/">Brico Cash</button>
+                        <button class="site-shortcut" data-url="https://www.amazon.fr/s?k=">Amazon</button>
+                        <button class="site-shortcut" data-url="https://www.mr-bricolage.fr/recherche/">Mr Bricolage</button>
+                        <button class="site-shortcut" data-url="https://www.discount-plomberie.com/recherche/">Discount Plomberie</button>
+                        <button class="site-shortcut" data-url="https://www.plomberie-online.fr/recherche/">Plomberie-Online</button>
+                        <button class="site-shortcut" data-url="https://www.esc-grossiste.fr/recherche/">Ecs Plomberie</button>
+                        <button class="site-shortcut" data-url="https://www.sanitaire-pas-cher.fr/recherche/">Sanitaire-PC</button>
+                        <button class="site-shortcut" data-url="https://www.123elec.com/recherche/">123Elec</button>
+                        <button class="site-shortcut" data-url="https://www.elec44.fr/recherche/">Elec44</button>
+                        <button class="site-shortcut" data-url="https://www.cash-electrique.fr/recherche/">Cash-elec</button>
+                        <button class="site-shortcut" data-url="https://www.batirmoinscher.com/recherche/">Batirmoincher</button>
+                        <button class="site-shortcut" data-url="https://www.bricodiscount.fr/recherche/">Bricodiscount</button>
+                        <button class="site-shortcut" data-url="https://www.bricozor.com/recherche/">Bricozor</button>
+                        <button class="site-shortcut" data-url="https://www.bricopascher.fr/recherche/">Brico Pas Cher</button>
+                        <button class="site-shortcut" data-url="https://www.bricorama.fr/catalogsearch/result/">Bricorama</button>
+                    </div>
+                </div>
+                <div id="searchHistoryContainer" style="margin-top:20px;display:none;"><h3>Recherches Récentes</h3><div id="searchHistory" style="margin-top:5px;"></div></div>
+            </div> 
+            <div class="card" style="margin-top:20px;">
+                <h3>Ajout Rapide (depuis recherche externe)</h3>
+                <p>Copiez une info (nom, prix, URL), puis "Coller". Sera ajouté aux Matériaux pour Devis.</p>
+                <div style="display:flex;gap:10px;align-items:center;margin-bottom:15px;">
+                    <button id="manualCaptureHelpButton" class="btn secondary small"><i class="fas fa-question-circle"></i> Aide</button>
+                    <button id="pasteToQuickAddButton" class="btn small"><i class="fas fa-paste"></i> Coller Info</button>
+                </div>
+                <div id="manualCaptureInstructions" style="display:none;background-color:var(--light);padding:10px;border-radius:4px;font-size:0.85rem;">Copiez une info, revenez, cliquez "Coller". Répétez. <button id="closeManualCaptureInstructions" class="btn secondary very-small" style="float:right;padding:2px 4px;font-size:0.7rem;"><i class="fas fa-times"></i></button></div>
+                
+                <div class="form-group"><label for="quickAddDesc">Description Produit</label><input type="text" id="quickAddDesc"></div>
+                <div class="input-group">
+                    <div class="form-group"><label for="quickAddType">Type</label><select id="quickAddType"><option value="autre">Autre</option><option value="isolation">Isolation</option><option value="cloison">Cloison</option><option value="plomberie">Plomberie</option><option value="faience">Faïence</option><option value="colle">Colle</option><option value="joint">Joint</option><option value="peinture">Peinture</option><option value="sol">Revêtement sol</option></select></div>
+                    <div class="form-group"><label for="quickAddPrice">Prix (€)</label><input type="number" id="quickAddPrice" step="0.01" min="0"></div>
+                </div>
+                <div class="input-group">
+                    <div class="form-group"><label for="quickAddQuantity">Qté Achetée</label><input type="number" id="quickAddQuantity" step="1" min="1" value="1"></div>
+                    <div class="form-group"><label for="quickAddUnit">Unité Achat</label><input type="text" id="quickAddUnit" placeholder="Ex: pot, sac..."></div>
+                    <div class="form-group"><label for="quickAddPackaging">Conditionnement</label><input type="text" id="quickAddPackaging" placeholder="Ex: Pot 2.5L"></div>
+                </div>
+                <div class="form-group"><label for="quickAddSource">Source</label><input type="text" id="quickAddSource"></div>
+                <div class="form-group"><label for="quickAddUrl">URL</label><input type="url" id="quickAddUrl"></div>
+                <div class="btn-row" style="justify-content:flex-end;"><button id="quickAddBtn" class="btn"><i class="fas fa-share-square"></i> Ajouter au Devis</button><button id="quickAddClearBtn" class="btn secondary" style="margin-left:5px;"><i class="fas fa-eraser"></i></button></div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="synthesis"> 
+            <div class="card">
+                <h2>Synthèse des Quantités Calculées Mémorisées</h2>
+                <p>Ces estimations sont pour information et ne sont pas incluses dans le chiffrage du devis.</p>
+                <div style="overflow-x:auto;">
+                    <table id="calculatedQuantitiesTable">
+                        <thead><tr><th>Type Calcul</th><th>Description du Calcul</th><th>Quantités Estimées</th><th>Action</th></tr></thead>
+                        <tbody><!-- Rempli par JS --></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card" style="margin-top: 20px;">
+                <h2>Matériaux Manuels pour Devis Chiffré</h2>
+                <p>Ajoutez ici les matériaux avec leurs prix pour constituer votre devis.</p>
+                <div class="input-group">
+                    <div class="form-group"><label for="materialType">Type de matériau</label><select id="materialType"> <option value="autre">Autre</option><option value="isolation">Isolation</option><option value="cloison">Cloison</option><option value="plomberie">Plomberie</option><option value="faience">Faïence</option><option value="colle">Colle</option><option value="joint">Joint</option><option value="peinture">Peinture</option><option value="sol">Revêtement sol</option></select></div>
+                    <div class="form-group"><label for="materialDesc">Description Détaillée</label><input type="text" id="materialDesc" placeholder="Ex: Laine de verre GR32 100mm"></div>
+                </div>
+                <div class="input-group">
+                    <div class="form-group"><label for="materialQuantity">Quantité Achetée</label><input type="number" id="materialQuantity" step="0.01" min="0" placeholder="Ex: 3"></div>
+                    <div class="form-group">
+                        <label for="materialUnit">Unité d'Achat</label>
+                        <input type="text" id="materialUnit" placeholder="Ex: sac, pot, m², rouleau...">
+                    </div>
+                     <div class="form-group">
+                        <label for="materialPackaging">Conditionnement (optionnel)</label>
+                        <input type="text" id="materialPackaging" placeholder="Ex: Sac 25kg, Pot 2.5L">
+                    </div>
+                </div>
+                 <div class="input-group">
+                    <div class="form-group"><label for="materialPrice">Prix Unitaire (€ par unité d'achat)</label><input type="number" id="materialPrice" step="0.01" min="0"></div>
+                    <div class="form-group"><label for="materialSource">Source (optionnel)</label><input type="text" id="materialSource" placeholder="Ex: Leroy Merlin"></div>
+                    <div class="form-group"><label for="materialUrl">URL (optionnel)</label><input type="url" id="materialUrl" placeholder="https://..."></div>
+                </div>
+                <div class="btn-row" style="justify-content:flex-end;"><button id="addMaterialBtn" class="btn"><i class="fas fa-plus"></i> Ajouter au Devis</button></div>
+                <h3 style="margin-top:1.5rem;">Liste des Matériaux du Devis</h3>
+                <div style="overflow-x:auto;"><table id="materialTable"><thead><tr><th>Type</th><th>Description</th><th>Qté</th><th>Unité Achat</th><th>PU (€)</th><th>Total (€)</th><th>Actions</th></tr></thead><tbody></tbody></table></div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="estimate">
+            <div class="card">
+                <div id="printLogoContainer" class="print-only">
+                    <img src="images/Logo-EstimPro.png" alt="Logo EstimPro"> 
+                </div>
+                <h2>Devis Estimatif</h2>
+                
+                <div class="estimate-section">
+                    <h3>Informations Client & Projet</h3>
+                    <div class="input-group">
+                        <div class="form-group"><label for="clientName">Client</label><input type="text" id="clientName"></div>
+                        <div class="form-group"><label for="projectAddress">Projet</label><input type="text" id="projectAddress"></div>
+                    </div>
+                </div>
+
+                <div id="printRoomSurfaceSection" class="estimate-section">
+                    <h3>Détails de la Pièce (si mémorisés)</h3>
+                    <p>Nom de la pièce : <strong id="printRoomName">N/A</strong></p>
+                    <p>Surface au sol : <strong id="printFloorArea">N/A</strong></p>
+                    <p>Surface des murs (brute) : <strong id="printWallArea">N/A</strong></p>
+                </div>
+                
+                <div id="printCalculatedQuantitiesSection" class="estimate-section">
+                    <h3>Synthèse des Quantités Calculées (pour information)</h3>
+                    <div style="overflow-x:auto;">
+                        <table id="printCalculatedQuantitiesTable">
+                            <thead><tr><th>Type Calcul</th><th>Description</th><th>Quantités Estimées</th></tr></thead>
+                            <tbody><!-- Rempli par JS avant impression --></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="estimate-section">
+                    <h3>Récapitulatif Matériaux Chiffrés</h3>
+                    <div style="overflow-x:auto;"><table id="estimateTable"><thead><tr><th>Type</th><th>Description</th><th>Qté</th><th>Unité Achat</th><th>PU (€)</th><th>Total (€)</th></tr></thead><tbody></tbody><tfoot><tr><td colspan="5" style="text-align:right;font-weight:600;">Total Matériaux</td><td id="materialSubtotal" style="font-weight:600;">0.00 €</td></tr></tfoot></table></div>
+                </div>
+
+                <div style="margin-top:2rem;padding:1rem;background-color:var(--light);border-radius:0.5rem;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <h3 style="margin:0;">Total Devis (Matériaux)</h3>
+                        <div style="font-size:1.6rem;font-weight:bold;color:var(--primary);"><span id="totalEstimate">0.00</span> €</div>
+                    </div>
+                </div>
+                <div class="btn-row" style="margin-top:1.5rem; justify-content:flex-end; gap: 0.5rem;">
+                    <button id="saveEstimateJsonBtn" class="btn secondary small"><i class="fas fa-file-download"></i> Sauvegarder Devis (JSON)</button>
+                    <button id="loadEstimateJsonBtn" class="btn secondary small"><i class="fas fa-file-upload"></i> Charger Devis (JSON)</button>
+                    <button id="printEstimatePdfBtn" class="btn small"><i class="fas fa-print"></i> Imprimer Devis (PDF)</button>
+                </div>
+            </div>
+        </div>
+        <div class="tab-content" id="help">
+            <div class="card">
+                <h2>Aide / Notice d'Utilisation - EstimPro</h2>
+                <div class="notice-content">
+                    <p>Bienvenue sur EstimPro ! Cet outil est conçu pour vous aider à estimer le coût des matériaux pour vos projets de travaux.</p>
+
+                    <h4><i class="fas fa-ruler-combined"></i> Onglet "Surfaces Pièce"</h4>
+                    <ul>
+                        <li>Entrez le nom, le type, la longueur, la largeur et la hauteur d'une pièce.</li>
+                        <li>Cliquez sur "Calculer" pour obtenir la surface au sol et la surface brute des murs.</li>
+                        <li>Cliquez sur "Mémoriser" pour sauvegarder ces dimensions dans la session actuelle. Ces informations seront reprises dans la version imprimable du devis. Une seule pièce peut être mémorisée à la fois.</li>
+                    </ul>
+
+                    <h4><i class="fas fa-calculator"></i> Onglet "Calculateurs Matériaux"</h4>
+                    <ul>
+                        <li>Choisissez un type de calcul dans le menu déroulant (béton, placo, peinture, etc.).</li>
+                        <li>Remplissez les champs spécifiques au calculateur sélectionné.</li>
+                        <li>Cliquez sur "Calculer" pour obtenir une estimation des quantités (ex: volume de béton, nombre de plaques, litres de peinture). Le calculateur de béton donne aussi une estimation du nombre de sacs prêts à l'emploi.</li>
+                        <li>Si les résultats vous conviennent, cliquez sur "Mémoriser ce calcul". Ces informations seront ajoutées à la "Synthèse des Quantités Calculées" (visible dans l'onglet suivant et sur le devis imprimable) mais **ne sont pas incluses dans le chiffrage du devis**. Elles servent d'aide-mémoire.</li>
+                    </ul>
+                    
+                    <h4><i class="fas fa-search"></i> Onglet "Recherche Produits"</h4>
+                    <ul>
+                        <li>Utilisez le champ de recherche principal et le bouton "Google" (ou les raccourcis fournisseurs) pour lancer une recherche dans un nouvel onglet de votre navigateur.</li>
+                        <li>Une fois que vous avez trouvé un produit sur un site externe :
+                            <ol>
+                                <li>Notez les informations pertinentes (description, prix, unité de vente, conditionnement, source, URL).</li>
+                                <li>Revenez sur EstimPro, dans l'onglet "Recherche Produits".</li>
+                                <li>Utilisez la section "Ajout Rapide". Copiez une information à la fois (ex: nom du produit) depuis le site externe, puis cliquez sur "Coller Info" ici. Le système essaiera de placer l'information dans le champ le plus pertinent. Répétez pour le prix, l'URL, etc.</li>
+                                <li>Complétez manuellement les champs "Quantité Achetée", "Unité d'Achat", et "Conditionnement" (si non collé).</li>
+                                <li>Cliquez sur "Ajouter au Devis" pour que ce produit soit inclus dans votre liste chiffrée (dans l'onglet "Synthèse & Matériaux Devis").</li>
+                            </ol>
+                        </li>
+                    </ul>
+
+                    <h4><i class="fas fa-clipboard-list"></i> Onglet "Synthèse & Matériaux Devis"</h4>
+                    <ul>
+                        <li><strong>Synthèse des Quantités Calculées :</strong> Visualisez ici tous les calculs que vous avez mémorisés depuis l'onglet "Calculateurs". Vous pouvez supprimer des entrées si besoin.</li>
+                        <li><strong>Matériaux Manuels pour Devis Chiffré :</strong> C'est ici que vous construisez la liste des matériaux qui composeront votre devis final.
+                            <ul>
+                                <li><strong>Type de matériau :</strong> Catégorisez votre matériau.</li>
+                                <li><strong>Description Détaillée :</strong> Soyez précis (marque, dimensions, couleur, etc.).</li>
+                                <li><strong>Quantité Achetée :</strong> Le nombre d'unités que vous allez acheter (ex: 3 pots de peinture, 10 sacs de ciment).</li>
+                                <li><strong>Unité d'Achat :</strong> L'unité de vente du produit (ex: pot, sac, m², rouleau, plaque, unité). Ce sera l'unité affichée dans le devis.</li>
+                                <li><strong>Conditionnement (optionnel) :</strong> Précisez la taille du conditionnement (ex: Sac 25kg, Pot 2.5L). Ceci est informatif et sera ajouté à la description dans le devis.</li>
+                                <li><strong>Prix Unitaire :</strong> Le prix d'une "Unité d'Achat" (ex: prix d'un pot de 2.5L, prix d'un sac de 25kg).</li>
+                                <li><strong>Source/URL (optionnel) :</strong> Pour garder une trace de l'origine du produit.</li>
+                            </ul>
+                        </li>
+                        <li>Cliquez sur "Ajouter au Devis" pour ajouter le matériau à la liste chiffrée.</li>
+                        <li>La table "Liste des Matériaux du Devis" affiche tous les matériaux qui seront chiffrés. Vous pouvez les modifier ou les supprimer.</li>
+                    </ul>
+
+                    <h4><i class="fas fa-file-invoice-dollar"></i> Onglet "Devis Estimatif"</h4>
+                    <ul>
+                        <li>Remplissez les informations du client et du projet.</li>
+                        <li>Visualisez le récapitulatif des matériaux chiffrés.</li>
+                        <li>Le total estimé est calculé automatiquement.</li>
+                        <li><strong>Sauvegarder Devis (JSON) :</strong> Sauvegarde les informations du client, les matériaux chiffrés, les quantités calculées mémorisées et les surfaces de pièce dans un fichier `.json` sur votre ordinateur.</li>
+                        <li><strong>Charger Devis (JSON) :</strong> Charge un fichier de devis précédemment sauvegardé.</li>
+                        <li><strong>Imprimer Devis (PDF) :</strong> Prépare une version imprimable du devis. Votre navigateur vous proposera d'imprimer ou "d'Enregistrer en PDF".</li>
+                    </ul>
+                    
+                    <h4><i class="fas fa-save"></i> Gestion des Projets (Boutons du Header)</h4>
+                    <ul>
+                        <li><strong>Nouveau Projet :</strong> Efface toutes les données de l'application.</li>
+                        <li><strong>Charger Projet :</strong> Restaure un projet complet depuis un fichier `.json`.</li>
+                        <li><strong>Enregistrer Projet :</strong> Sauvegarde l'intégralité du projet actuel dans un fichier `.json`.</li>
+                    </ul>
+                     <p><strong>Note :</strong> L'application utilise la sauvegarde locale de votre navigateur pour mémoriser votre session. Pour des sauvegardes permanentes, utilisez "Enregistrer Projet" ou "Sauvegarder Devis".</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-tabs" id="footerNavTabs">
+            <a href="#" class="footer-tab active" data-tab="surfaces"><i class="fas fa-ruler-combined"></i><span>Surfaces</span></a>
+            <a href="#" class="footer-tab" data-tab="calculators"><i class="fas fa-calculator"></i><span>Calculateurs</span></a>
+            <a href="#" class="footer-tab" data-tab="search"><i class="fas fa-search"></i><span>Recherche</span></a>
+            <a href="#" class="footer-tab" data-tab="synthesis"><i class="fas fa-clipboard-list"></i><span>Synthèse</span></a>
+            <a href="#" class="footer-tab" data-tab="estimate"><i class="fas fa-file-invoice-dollar"></i><span>Devis</span></a>
+            <a href="#" class="footer-tab" data-tab="help"><i class="fas fa-question-circle"></i><span>Aide</span></a>
+        </div>
+    </footer>
+
+<script>
+        // --- Utilitaires (déplacés en haut) ---
+        function showNotification(message,type='info'){const el=document.createElement('div');el.className=`notification ${type}`;let ico={'success':'check-circle','warning':'exclamation-triangle','error':'times-circle','info':'info-circle'}[type]||'info-circle';el.innerHTML=`<div class="notification-content"><i class="fas fa-${ico}"></i><span>${message}</span></div>`;document.body.appendChild(el);setTimeout(()=>el.classList.add('show'),10);setTimeout(()=>{el.classList.remove('show');setTimeout(()=>{if(document.body.contains(el))document.body.removeChild(el);},400);},(type==='error'||type==='warning'?4500:3000));}
+        function getTypeNameFromValue(val){const m={'isolation':'Isolation','cloison':'Cloison','plomberie':'Plomberie','faience':'Faïence','colle':'Colle','joint':'Joint','peinture':'Peinture','sol':'Revêtement sol','autre':'Autre'};return m[val]||'Autre';}
+        
+        const APP_VERSION = "1.3.9"; 
+        const state = { 
+            appVersion: APP_VERSION,
+            materials: [], 
+            calculatedQuantities: [], 
+            currentSurfaces: null, 
+            clientInfo: { name: '', address: '' },
+            searchHistory: []
+        };
+        
+        function initApp() {
+            initTabs(); initSurfaceCalculation(); initQuantityCalculators(); 
+            initProductSearch(); initQuickAddProduct(); initManualCaptureTool(); 
+            initMaterialsManagement(); initEstimateGeneration();
+            initFileOperations(); 
+            loadStateFromLocalStorage(); 
+            showNotification(`EstimPro ${APP_VERSION} prêt !`, 'success'); 
+        }
+        
+        function initTabs() { 
+            const mainTabs = document.querySelectorAll('#mainTabs .tab'); 
+            const footerTabs = document.querySelectorAll('#footerNavTabs .footer-tab');
+            const allNavElements = [...mainTabs, ...footerTabs]; 
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            function activateTab(tabId) {
+                allNavElements.forEach(navEl => { if (navEl.dataset.tab === tabId) navEl.classList.add('active'); else navEl.classList.remove('active'); });
+                tabContents.forEach(contentEl => { if (contentEl.id === tabId) contentEl.classList.add('active'); else contentEl.classList.remove('active'); });
+                if (tabId === 'estimate') updateEstimateUI();
+                if (tabId === 'synthesis') { updateCalculatedQuantitiesTableUI(); updateMaterialsTableUI(); } 
+                if (tabId === 'calculators') { const calcTypeEl = document.getElementById('calculatorType'); if(calcTypeEl) calcTypeEl.value = ""; document.querySelectorAll('.calculator-form').forEach(f => f.classList.remove('active')); document.querySelectorAll('.results-display').forEach(r => {r.style.display = 'none'; r.innerHTML='';}); const placeholderEl = document.getElementById('calculatorPlaceholder'); if(placeholderEl) placeholderEl.style.display = 'block';}
+            }
+            if (mainTabs.length > 0) { activateTab(mainTabs[0].dataset.tab);  }
+            allNavElements.forEach(navEl => { navEl.addEventListener('click', function(event) { event.preventDefault(); const tabIdToActivate = this.dataset.tab; activateTab(tabIdToActivate); }); });
+        }
+        function initFileOperations() {
+            document.getElementById('newProjectBtn').addEventListener('click', () => { if (confirm('Nouveau projet ? Ceci effacera toutes les données actuelles (y compris la sauvegarde de session).')) resetApplicationState(); });
+            document.getElementById('saveProjectJsonBtn').addEventListener('click', saveFullProjectToJSON);
+            document.getElementById('loadProjectBtn').addEventListener('click', () => document.getElementById('projectFileInput').click());
+            document.getElementById('projectFileInput').addEventListener('change', handleProjectFileSelect);
+            document.getElementById('saveEstimateJsonBtn').addEventListener('click', saveEstimateDataToJSON);
+            document.getElementById('loadEstimateJsonBtn').addEventListener('click', () => document.getElementById('estimateFileInput').click());
+            document.getElementById('estimateFileInput').addEventListener('change', handleEstimateFileSelect);
+            document.getElementById('printEstimatePdfBtn').addEventListener('click', printEstimate);
+        }
+
+        function initSurfaceCalculation() { 
+            const calculateBtn = document.getElementById('calculateSurfaceBtn');
+            const saveBtn = document.getElementById('saveAreaBtn');
+
+            if (calculateBtn) {
+                calculateBtn.addEventListener('click', calculateSurfaces);
+            } else {
+                console.error("Bouton 'calculateSurfaceBtn' introuvable lors de l'init.");
+            }
+
+            if (saveBtn) {
+                saveBtn.addEventListener('click', () => { 
+                    saveCurrentSurfacesToState(); 
+                    showNotification('Surfaces mémorisées (session).', 'success'); 
+                });
+            } else {
+                 console.error("Bouton 'saveAreaBtn' introuvable lors de l'init.");
+            }
+        }
+        
+        function calculateSurfaces() { 
+            const l_el = document.getElementById('length'); const w_el = document.getElementById('width'); const h_el = document.getElementById('height'); const roomName_el = document.getElementById('roomName');
+            if (!l_el || !w_el || !h_el || !roomName_el) { return; }
+            const l = parseFloat(l_el.value) || 0; const w = parseFloat(w_el.value) || 0; const h = parseFloat(h_el.value) || 0; const roomName = roomName_el.value || 'Pièce';
+            const surfaceResultsEl = document.getElementById('surfaceResults'); const calculatedRoomNameEl = document.getElementById('calculatedRoomName'); const floorAreaEl = document.getElementById('floorArea'); const wallAreaEl = document.getElementById('wallArea');
+            if (!surfaceResultsEl || !calculatedRoomNameEl || !floorAreaEl || !wallAreaEl) { return; }
+            if (l <= 0 || w <= 0 || h <= 0) { showNotification('Dims pièce invalides.', 'warning'); surfaceResultsEl.style.display = 'none'; return; }
+            const floorArea = l * w; const wallArea = 2 * (l + w) * h;
+            calculatedRoomNameEl.textContent = roomName; floorAreaEl.textContent = floorArea.toFixed(2); wallAreaEl.textContent = wallArea.toFixed(2); surfaceResultsEl.style.display = 'block';
+        }
+
+        function saveCurrentSurfacesToState() { 
+            const surfaceResultsEl = document.getElementById('surfaceResults'); if (!surfaceResultsEl || surfaceResultsEl.style.display === 'none') { showNotification('Calculez d\'abord les surfaces valides avant de mémoriser.', 'warning'); return; }
+            state.currentSurfaces = { roomName: document.getElementById('roomName').value || 'Pièce', roomType: document.getElementById('roomType').value, dimensions: { length: parseFloat(document.getElementById('length').value) || 0, width: parseFloat(document.getElementById('width').value) || 0, height: parseFloat(document.getElementById('height').value) || 0 }, floorArea: parseFloat(document.getElementById('floorArea').textContent) || 0, wallArea: parseFloat(document.getElementById('wallArea').textContent) || 0 };
+            saveStateToLocalStorage(); 
+        }
+
+        function initQuantityCalculators() { 
+            const select = document.getElementById('calculatorType'); const forms = document.querySelectorAll('.calculator-form'); const placeholder = document.getElementById('calculatorPlaceholder');
+            select.addEventListener('change', function() { forms.forEach(form => form.classList.remove('active')); document.querySelectorAll('.results-display').forEach(r => {r.style.display = 'none'; r.innerHTML='';}); placeholder.style.display = 'none'; const formId = this.value ? `calc${this.value.charAt(0).toUpperCase() + this.value.slice(1)}Form` : ''; const selectedForm = formId ? document.getElementById(formId) : null; if (selectedForm) selectedForm.classList.add('active'); else placeholder.style.display = 'block'; });
+            function createMemoizeButton(resultsDiv, calculatorType, descriptionGetter, resultsGetter) { let memoSection = resultsDiv.querySelector('.memo-section'); if (!memoSection) { memoSection = document.createElement('div'); memoSection.className = 'memo-section'; resultsDiv.appendChild(memoSection); } memoSection.innerHTML = ''; const memoButton = document.createElement('button'); memoButton.className = 'btn small secondary'; memoButton.innerHTML = '<i class="fas fa-bookmark"></i> Mémoriser ce calcul'; memoButton.addEventListener('click', () => { const calcResult = { id: 'calcqty_' + Date.now(), calculatorType, description: descriptionGetter(), results: resultsGetter(), timestamp: new Date().toISOString() }; state.calculatedQuantities.push(calcResult); saveStateToLocalStorage(); updateCalculatedQuantitiesTableUI(); showNotification(`Calcul "${calculatorType}" mémorisé.`, 'success'); }); memoSection.appendChild(memoButton); }
+            document.getElementById('calculateConcreteBtn').addEventListener('click', () => { const l = parseFloat(document.getElementById('concreteLength').value) || 0, w = parseFloat(document.getElementById('concreteWidth').value) || 0, t_cm = parseFloat(document.getElementById('concreteThickness').value) || 0; if (l <= 0 || w <= 0 || t_cm <= 0) { showNotification("Dims béton invalides.", "warning"); return; } const volume_m3 = (l * w * (t_cm / 100)); const bagsPerM3_35kg = 67; const numBags35kg = Math.ceil(volume_m3 * bagsPerM3_35kg); const resultsDiv = document.getElementById('concreteResults'); resultsDiv.innerHTML = `<p>Volume de béton : <strong>${volume_m3.toFixed(3)} m³</strong></p><p>Estimation sacs prêts à l'emploi (35kg) : <strong>~${numBags35kg} sacs</strong></p><small>Vérifiez le rendement exact sur l'emballage du produit.</small>`; resultsDiv.style.display = 'block'; createMemoizeButton(resultsDiv, 'Béton (Dalle)', () => `Dalle ${l}x${w}x${(t_cm/100).toFixed(2)}m`, () => [`Volume: ${volume_m3.toFixed(3)} m³`, `Sacs 35kg (est.): ~${numBags35kg}`]); });
+            document.getElementById('calculateDrywallBtn').addEventListener('click', () => { const surface = parseFloat(document.getElementById('drywallSurface').value) || 0, pW = parseFloat(document.getElementById('plateWidth').value) || 1.2, pH = parseFloat(document.getElementById('plateHeight').value) || 2.5, waste = parseFloat(document.getElementById('drywallWaste').value) || 10; if (surface <= 0 || pW <=0 || pH <=0) { showNotification("Données Placo invalides.", "warning"); return; } const plateArea = pW * pH; const numPlates = Math.ceil((surface / plateArea) * (1 + waste / 100)); const resultsDiv = document.getElementById('drywallResults'); resultsDiv.innerHTML = `<p>Plaques (${pW.toFixed(2)}x${pH.toFixed(2)}m) : <strong>${numPlates}</strong> (avec ${waste}% perte)</p>`; resultsDiv.style.display = 'block'; createMemoizeButton(resultsDiv, 'Plaques Plâtre', () => `Plaques pour ${surface.toFixed(1)}m²`, () => [`Nb plaques (${pW.toFixed(2)}x${pH.toFixed(2)}m): ${numPlates} unités`]); });
+            document.getElementById('calculatePaintBtn').addEventListener('click', () => { const surface = parseFloat(document.getElementById('paintSurface').value) || 0, coats = parseInt(document.getElementById('paintCoats').value) || 1, coverage = parseFloat(document.getElementById('paintCoverage').value) || 10; if (surface <= 0 || coats <= 0 || coverage <= 0) { showNotification("Données peinture invalides.", "warning"); return; } const totalLitres = ((surface * coats) / coverage); const resultsDiv = document.getElementById('paintResults'); resultsDiv.innerHTML = `<p>Peinture nécessaire : <strong>${totalLitres.toFixed(2)} L</strong> (${coats} couche(s))</p>`; resultsDiv.style.display = 'block'; createMemoizeButton(resultsDiv, 'Peinture', () => `Peinture ${surface.toFixed(1)}m², ${coats} couche(s)`, () => [`Total: ${totalLitres.toFixed(2)} Litres`]); });
+            document.getElementById('calculateTilesBtn').addEventListener('click', () => { const area = parseFloat(document.getElementById('tileAreaSurface').value) || 0; const tileW_cm = parseFloat(document.getElementById('tileWidthDim').value) || 0, tileH_cm = parseFloat(document.getElementById('tileHeightDim').value) || 0; const jointW_mm = parseFloat(document.getElementById('tileJointWidth').value) || 3, waste = parseFloat(document.getElementById('tileWaste').value) || 10; const glueCov = parseFloat(document.getElementById('glueCoverage').value) || 4; const groutDens = parseFloat(document.getElementById('groutDensity').value) || 1.6; if (area <= 0 || tileW_cm <= 0 || tileH_cm <= 0) { showNotification("Dims carrelage invalides.", "warning"); return; } const tileW_m = tileW_cm/100, tileH_m = tileH_cm/100; const singleTileArea = tileW_m*tileH_m; const numTiles = Math.ceil((area/singleTileArea)*(1+waste/100)); const totalTileSurfaceWithWaste=(area*(1+waste/100)); const resultsArray=[`Carreaux (${tileW_cm}x${tileH_cm}cm): ${numTiles} unités (Surf. cde: ${totalTileSurfaceWithWaste.toFixed(2)} m²)`]; let resultsHTML=`<p>Carreaux (${tileW_cm}x${tileH_cm}cm) : <strong>${numTiles} u.</strong> (Surf. cde: <strong>${totalTileSurfaceWithWaste.toFixed(2)} m²</strong>)</p>`; if(glueCov>0){const totalGlue_kg=(area*glueCov);resultsHTML+=`<p>Colle (${glueCov}kg/m²) : <strong>${totalGlue_kg.toFixed(2)} kg</strong></p>`;resultsArray.push(`Colle: ${totalGlue_kg.toFixed(2)} kg`);} if(jointW_mm>0&&groutDens>0){const jointW_m=jointW_mm/1000;const jointDepth_m=0.005;const jointVolPerM2_L=(((tileW_m+tileH_m)/(tileW_m*tileH_m))*jointW_m*jointDepth_m)*1000;const totalGrout_L=area*jointVolPerM2_L;const totalGrout_kg=totalGrout_L*groutDens;resultsHTML+=`<p>Mortier-joint (${jointW_mm}mm) : <strong>${totalGrout_kg.toFixed(2)} kg</strong> (~${totalGrout_L.toFixed(2)}L)</p>`;resultsArray.push(`Joint: ${totalGrout_kg.toFixed(2)} kg`);} const resultsDiv=document.getElementById('tilesResults');resultsDiv.innerHTML=resultsHTML;resultsDiv.style.display='block'; createMemoizeButton(resultsDiv, 'Carrelage', () => `Carrelage ${area.toFixed(1)}m²`, () => resultsArray ); });
+            document.getElementById('calculateFlooringBtn').addEventListener('click', () => { const area=parseFloat(document.getElementById('floorAreaToCover').value)||0; const itemW=parseFloat(document.getElementById('flooringItemWidth').value)||0,itemL=parseFloat(document.getElementById('flooringItemLength').value)||0; const waste=parseFloat(document.getElementById('flooringWaste').value)||10; if(area<=0){showNotification("Surface revêtement sol invalide.","warning");return;} const totalSurfaceWithWaste=(area*(1+waste/100)); let resultsHTML=`<p>Surface totale revêtement (avec ${waste}% perte) : <strong>${totalSurfaceWithWaste.toFixed(2)} m²</strong></p>`; let numItems=0;let resultsArray=[`Surface totale: ${totalSurfaceWithWaste.toFixed(2)} m²`]; if(itemW>0&&itemL>0){const singleItemArea=itemW*itemL;numItems=Math.ceil(totalSurfaceWithWaste/singleItemArea);resultsHTML+=`<p>Nb lames/dalles (${itemW.toFixed(2)}x${itemL.toFixed(2)}m) : <strong>${numItems} u.</strong></p>`;resultsArray.push(`Nb pièces (${itemW.toFixed(2)}x${itemL.toFixed(2)}m): ${numItems} u.`);} const resultsDiv=document.getElementById('flooringResults');resultsDiv.innerHTML=resultsHTML;resultsDiv.style.display='block'; createMemoizeButton(resultsDiv, 'Revêtement Sol',()=>`Revêtement sol ${area.toFixed(1)}m²`,()=>resultsArray);});
+            document.getElementById('calculateInsRollBtn').addEventListener('click', () => { const area=parseFloat(document.getElementById('insRollArea').value)||0; const rollW=parseFloat(document.getElementById('rollWidth').value)||0,rollL=parseFloat(document.getElementById('rollLength').value)||0; const waste=parseFloat(document.getElementById('insRollWaste').value)||5; if(area<=0||rollW<=0||rollL<=0){showNotification("Données isolant rouleau invalides.","warning");return;} const rollArea=rollW*rollL;const numRolls=Math.ceil((area/rollArea)*(1+waste/100)); const resultsDiv=document.getElementById('insRollResults');resultsDiv.innerHTML=`<p>Nb rouleaux (${rollW.toFixed(2)}x${rollL.toFixed(2)}m) : <strong>${numRolls}</strong> (avec ${waste}% perte)</p>`;resultsDiv.style.display='block'; createMemoizeButton(resultsDiv, 'Isolant Rouleau',()=>`Isolant rouleau ${area.toFixed(1)}m²`,()=>[`Nb rouleaux (${rollW.toFixed(2)}x${rollL.toFixed(2)}m): ${numRolls} unités`]);});
+            document.getElementById('calculateInsPanelBtn').addEventListener('click', () => { const area=parseFloat(document.getElementById('insPanelArea').value)||0; const panelW=parseFloat(document.getElementById('panelWidth').value)||0,panelL=parseFloat(document.getElementById('panelLength').value)||0; const waste=parseFloat(document.getElementById('insPanelWaste').value)||7; if(area<=0||panelW<=0||panelL<=0){showNotification("Données isolant panneau invalides.","warning");return;} const panelArea=panelW*panelL;const numPanels=Math.ceil((area/panelArea)*(1+waste/100)); const resultsDiv=document.getElementById('insPanelResults');resultsDiv.innerHTML=`<p>Nb panneaux (${panelW.toFixed(2)}x${panelL.toFixed(2)}m) : <strong>${numPanels}</strong> (avec ${waste}% perte)</p>`;resultsDiv.style.display='block'; createMemoizeButton(resultsDiv, 'Isolant Panneau',()=>`Isolant panneau ${area.toFixed(1)}m²`,()=>[`Nb panneaux (${panelW.toFixed(2)}x${panelL.toFixed(2)}m): ${numPanels} unités`]);});
+        }
+        
+        function updateCalculatedQuantitiesTableUI() { 
+            const tbody = document.querySelector('#calculatedQuantitiesTable tbody'); if(!tbody) return; 
+            tbody.innerHTML = '';
+            if (state.calculatedQuantities.length === 0) { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:1rem;">Aucun calcul mémorisé.</td></tr>`; return; }
+            state.calculatedQuantities.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach(item => {
+                const row = document.createElement('tr'); const resultsText = Array.isArray(item.results) ? item.results.join('\n') : String(item.results);
+                row.innerHTML = `<td>${item.calculatorType}</td><td class="calc-item-desc">${item.description}</td><td class="calc-item-results">${resultsText.replace(/\n/g, '<br>')}</td><td><button class="btn delete-btn small" onclick="deleteCalculatedQuantityItem('${item.id}')" title="Supprimer"><i class="fas fa-trash-alt"></i></button></td>`;
+                tbody.appendChild(row);
+            });
+        }
+        function deleteCalculatedQuantityItem(id) { state.calculatedQuantities = state.calculatedQuantities.filter(item => item.id !== id); saveStateToLocalStorage(); updateCalculatedQuantitiesTableUI(); showNotification('Calcul mémorisé supprimé.', 'info'); }
+
+        function initProductSearch() { const searchInput = document.getElementById('searchTerm'), performSearchButton = document.getElementById('performSearchButton'); performSearchButton.addEventListener('click', () => { const term = searchInput.value.trim(); if (!term) { showNotification('Entrez un terme.', 'warning'); return; } performExternalSearch(term); addSearchTermToHistory(term); }); searchInput.addEventListener('keypress', e => { if (e.key === 'Enter') performSearchButton.click(); }); initSiteShortcuts(); loadSearchHistoryUI(); }
+        function initSiteShortcuts() { const shortcuts = document.querySelectorAll('.site-shortcut'), searchInput = document.getElementById('searchTerm'); shortcuts.forEach(button => button.addEventListener('click', () => { const baseUrl = button.dataset.url, term = searchInput.value.trim(); if (!term && !baseUrl.includes("google.com")) { showNotification('Entrez un terme de recherche.', 'warning'); searchInput.focus(); return; } window.open(baseUrl + encodeURIComponent(term), '_blank'); if(term) addSearchTermToHistory(term); })); }
+        function performExternalSearch(term) { window.open(`https://www.google.com/search?q=${encodeURIComponent(term)}+matériaux+bricolage`, '_blank'); showNotification(`Recherche Google pour "${term}".`, 'info'); }
+        function addSearchTermToHistory(term) { state.searchHistory = state.searchHistory.filter(t => t !== term); state.searchHistory.unshift(term); if (state.searchHistory.length > 5) state.searchHistory = state.searchHistory.slice(0, 5); saveStateToLocalStorage(); loadSearchHistoryUI(); }
+        function loadSearchHistoryUI() { const hist = state.searchHistory || [], cont = document.getElementById('searchHistoryContainer'), listEl = document.getElementById('searchHistory'); if (!cont || !listEl) return; if (hist.length === 0) { cont.style.display = 'none'; return; } cont.style.display = 'block'; listEl.innerHTML = hist.map(term => `<div class="search-history-item"><span class="search-history-term">${term}</span><div class="search-history-actions"><button class="search-history-button search-again" data-term="${term}" title="Chercher"><i class="fas fa-search"></i></button><button class="search-history-button delete-history" data-term="${term}" title="Suppr."><i class="fas fa-times"></i></button></div></div>`).join(''); listEl.querySelectorAll('.search-again').forEach(b => b.addEventListener('click', () => { document.getElementById('searchTerm').value = b.dataset.term; performExternalSearch(b.dataset.term); })); listEl.querySelectorAll('.delete-history').forEach(b => b.addEventListener('click', () => removeSearchTermFromHistory(b.dataset.term))); }
+        function removeSearchTermFromHistory(term) { state.searchHistory = state.searchHistory.filter(t => t !== term); saveStateToLocalStorage(); loadSearchHistoryUI(); }
+        
+        function initManualCaptureTool() { const helpBtn = document.getElementById('manualCaptureHelpButton'), instrDiv = document.getElementById('manualCaptureInstructions'), closeBtn = document.getElementById('closeManualCaptureInstructions'), pasteBtn = document.getElementById('pasteToQuickAddButton'); if(helpBtn) helpBtn.addEventListener('click', () => instrDiv.style.display = instrDiv.style.display === 'none' ? 'block' : 'none');  if(closeBtn) closeBtn.addEventListener('click', () => instrDiv.style.display = 'none');  if(pasteBtn) pasteBtn.addEventListener('click', async () => { try { const txt = await navigator.clipboard.readText(); if (!txt) {showNotification('Presse-papiers vide.','info');return;} const descEl=document.getElementById('quickAddDesc'),priceEl=document.getElementById('quickAddPrice'),urlEl=document.getElementById('quickAddUrl'),srcEl=document.getElementById('quickAddSource'), unitEl=document.getElementById('quickAddUnit'), pkgEl=document.getElementById('quickAddPackaging'); if(!descEl.value&&isNaN(parseFloat(txt.replace(',','.')))){descEl.value=txt;showNotification('Collé:Description','success');}else if(!priceEl.value&&!isNaN(parseFloat(txt.replace(',','.')))){priceEl.value=parseFloat(txt.replace(',','.')).toFixed(2);showNotification('Collé:Prix','success');}else if(!urlEl.value&&(txt.toLowerCase().startsWith('http')||txt.toLowerCase().startsWith('www'))){urlEl.value=txt;showNotification('Collé:URL','success');}else if(!srcEl.value){srcEl.value=txt;showNotification('Collé:Source','success');} else if (!unitEl.value && txt.length < 15 && !txt.includes(' ')) { unitEl.value = txt; showNotification('Collé:Unité Achat','success');} else if (!pkgEl.value && txt.length < 30) { pkgEl.value = txt; showNotification('Collé:Conditionnement','success');} else {descEl.value+=(descEl.value?" ":"")+txt;showNotification('Collé:Ajouté à Description','info');} descEl.scrollIntoView({behavior:'smooth',block:'center'});}catch(err){showNotification('Erreur presse-papiers.','error');console.error('Clipboard err:',err);}}); }
+        function initQuickAddProduct() { 
+            document.getElementById('quickAddBtn').addEventListener('click', () => { 
+                const data = {description:document.getElementById('quickAddDesc').value.trim(),type:document.getElementById('quickAddType').value,price:parseFloat(document.getElementById('quickAddPrice').value)||0,quantity:parseFloat(document.getElementById('quickAddQuantity').value)||1,unit: document.getElementById('quickAddUnit').value.trim() || 'unité', packaging: document.getElementById('quickAddPackaging').value.trim(), source:document.getElementById('quickAddSource').value.trim(),url:document.getElementById('quickAddUrl').value.trim()}; 
+                if(!data.description || data.quantity <=0 || data.price < 0){showNotification('Description, Qté et Prix requis pour ajout rapide.','warning');return;} 
+                addMaterialToEstimateList(data); clearQuickAddForm(); 
+            });
+            document.getElementById('quickAddClearBtn').addEventListener('click', clearQuickAddForm);
+        }
+        function clearQuickAddForm() { ['quickAddDesc','quickAddPrice','quickAddUnit','quickAddPackaging','quickAddSource','quickAddUrl'].forEach(id=>document.getElementById(id).value=''); document.getElementById('quickAddQuantity').value='1'; document.getElementById('quickAddType').value='autre'; document.getElementById('quickAddDesc').focus(); }
+        
+        function initMaterialsManagement() { 
+            document.getElementById('addMaterialBtn').addEventListener('click', () => { 
+                const data={description:document.getElementById('materialDesc').value.trim(),type:document.getElementById('materialType').value,quantity:parseFloat(document.getElementById('materialQuantity').value)||0, unit: document.getElementById('materialUnit').value.trim() || 'unité', packaging: document.getElementById('materialPackaging').value.trim(), price:parseFloat(document.getElementById('materialPrice').value)||0, source:document.getElementById('materialSource').value.trim(),url:document.getElementById('materialUrl').value.trim()}; 
+                if(!data.description||data.quantity<=0||data.price<0){showNotification('Description, Qté>0 et Prix>=0 requis.','warning');return;} 
+                addMaterialToEstimateList(data); 
+                ['materialDesc','materialQuantity','materialUnit','materialPackaging','materialPrice','materialSource','materialUrl'].forEach(id => document.getElementById(id).value=''); 
+            });
+        }
+        function addMaterialToEstimateList(data) { 
+            const material = { id:'mat_'+Date.now(), type:data.type, typeName:getTypeNameFromValue(data.type), description:data.description, packaging: data.packaging || '', quantity:data.quantity, unit:data.unit, price:data.price, total:data.price*data.quantity, source:data.source||null, url:data.url||null, addedAt:new Date().toISOString() };
+            state.materials.push(material); saveStateToLocalStorage(); updateMaterialsTableUI(); updateEstimateUI();
+            showNotification(`"${material.description}" ajouté aux matériaux du devis.`,'success');
+        }
+        function updateMaterialsTableUI() { 
+            const tbody=document.querySelector('#materialTable tbody'); if(!tbody) return; 
+            tbody.innerHTML=''; 
+            if(state.materials.length===0){tbody.innerHTML=`<tr><td colspan="7" style="text-align:center;padding:1rem;">Aucun matériau pour le devis.</td></tr>`;return;}
+            const sorted=[...state.materials].sort((a,b)=>a.typeName.localeCompare(b.typeName)||a.description.localeCompare(b.description));
+            sorted.forEach(mat=>{ const row=document.createElement('tr'); let dHtml = mat.description; if (mat.packaging) dHtml += ` <small class="description-details">(${mat.packaging})</small>`; if(mat.url)dHtml+=` <a href="${mat.url}" target="_blank" title="Voir produit"><i class="fas fa-link s-i"></i></a>`; if(mat.source)dHtml+=`<span class="description-details">Source: ${mat.source}</span>`; row.innerHTML=`<td>${mat.typeName}</td><td>${dHtml}</td><td>${mat.quantity.toFixed(2)}</td><td>${mat.unit}</td><td>${mat.price.toFixed(2)}€</td><td>${mat.total.toFixed(2)}€</td><td><button class="btn small" onclick="editMaterialItem('${mat.id}')" title="Modifier"><i class="fas fa-edit"></i></button> <button class="btn delete-btn small" onclick="deleteMaterialItem('${mat.id}')" title="Supprimer"><i class="fas fa-trash"></i></button></td>`; tbody.appendChild(row); });
+            document.querySelectorAll('#materialTable .s-i').forEach(i => { i.style.fontSize='0.8em'; i.style.marginLeft='4px';});
+        }
+        function deleteMaterialItem(id) { if(confirm('Supprimer ce matériau du devis?')){state.materials=state.materials.filter(m=>m.id!==id);saveStateToLocalStorage();updateMaterialsTableUI();updateEstimateUI();showNotification('Matériau supprimé du devis.','info');}}
+        function editMaterialItem(id) { 
+            const mat=state.materials.find(m=>m.id===id); if(!mat)return; 
+            const currentTab = document.querySelector('.tab.active').dataset.tab; if (currentTab !== 'synthesis') document.querySelector('.tab[data-tab="synthesis"]').click();
+            document.getElementById('materialType').value=mat.type; document.getElementById('materialDesc').value=mat.description; 
+            document.getElementById('materialQuantity').value=mat.quantity; document.getElementById('materialUnit').value = mat.unit; 
+            document.getElementById('materialPackaging').value = mat.packaging || ''; document.getElementById('materialPrice').value=mat.price;
+            document.getElementById('materialSource').value=mat.source || ''; document.getElementById('materialUrl').value=mat.url || '';
+            state.materials=state.materials.filter(m=>m.id!==id); saveStateToLocalStorage();updateMaterialsTableUI();updateEstimateUI();
+            document.getElementById('materialDesc').focus(); showNotification('Modifiez & cliquez "Ajouter au Devis" pour sauver.','info');
+        }
+        
+        function initEstimateGeneration() { ['clientName','projectAddress'].forEach(id=>{document.getElementById(id).addEventListener('input',e=>{state.clientInfo[id]=e.target.value;saveStateToLocalStorage();});}); }
+        function updateEstimateUI() { 
+            const printRoomNameEl = document.getElementById('printRoomName'); const printFloorAreaEl = document.getElementById('printFloorArea'); const printWallAreaEl = document.getElementById('printWallArea'); const printRoomSurfaceSectionEl = document.getElementById('printRoomSurfaceSection');
+            if (state.currentSurfaces) {
+                if(printRoomNameEl) printRoomNameEl.textContent = state.currentSurfaces.roomName || 'N/A';
+                if(printFloorAreaEl) printFloorAreaEl.textContent = state.currentSurfaces.floorArea ? `${state.currentSurfaces.floorArea.toFixed(2)} m²` : 'N/A';
+                if(printWallAreaEl) printWallAreaEl.textContent = state.currentSurfaces.wallArea ? `${state.currentSurfaces.wallArea.toFixed(2)} m²` : 'N/A';
+                if(printRoomSurfaceSectionEl) printRoomSurfaceSectionEl.style.display = 'block'; 
+            } else { if(printRoomNameEl) printRoomNameEl.textContent = 'N/A'; if(printFloorAreaEl) printFloorAreaEl.textContent = 'N/A'; if(printWallAreaEl) printWallAreaEl.textContent = 'N/A'; if(printRoomSurfaceSectionEl) printRoomSurfaceSectionEl.style.display = 'none'; }
+
+            const printSynthTbody = document.querySelector('#printCalculatedQuantitiesTable tbody');
+            if (printSynthTbody) {
+                printSynthTbody.innerHTML = '';
+                if (state.calculatedQuantities.length > 0) {
+                    state.calculatedQuantities.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach(item => {
+                        const row = document.createElement('tr'); const resultsText = Array.isArray(item.results) ? item.results.join('\n') : String(item.results);
+                        row.innerHTML = `<td>${item.calculatorType}</td><td>${item.description}</td><td>${resultsText.replace(/\n/g, '<br>')}</td>`;
+                        printSynthTbody.appendChild(row);
+                    });
+                } else { printSynthTbody.innerHTML = `<tr><td colspan="3" style="text-align:center;">Aucune quantité calculée mémorisée.</td></tr>`; }
+            }
+
+            const tbody=document.querySelector('#estimateTable tbody'); if(!tbody) return; 
+            tbody.innerHTML=''; 
+            if(state.materials.length===0){tbody.innerHTML=`<tr><td colspan="6" style="text-align:center;padding:1rem;">Aucun matériau dans le devis.</td></tr>`;document.getElementById('materialSubtotal').textContent='0.00 €';document.getElementById('totalEstimate').textContent='0.00';return;}
+            let total=0; const sorted=[...state.materials].sort((a,b)=>a.typeName.localeCompare(b.typeName)||a.description.localeCompare(b.description));
+            sorted.forEach(mat=>{ const row=document.createElement('tr'); let dHtml = mat.description; if (mat.packaging) dHtml += ` <small class="description-details">(${mat.packaging})</small>`; if(mat.url)dHtml+=` <a href="${mat.url}" target="_blank" title="Voir produit"><i class="fas fa-link s-i"></i></a>`; if(mat.source)dHtml+=`<span class="description-details">Source: ${mat.source}</span>`; row.innerHTML=`<td>${mat.typeName}</td><td>${dHtml}</td><td>${mat.quantity.toFixed(2)}</td><td>${mat.unit}</td><td>${mat.price.toFixed(2)}€</td><td>${mat.total.toFixed(2)}€</td>`; tbody.appendChild(row); total+=mat.total;});
+            document.getElementById('materialSubtotal').textContent=total.toFixed(2)+' €'; document.getElementById('totalEstimate').textContent=total.toFixed(2);
+            document.querySelectorAll('#estimateTable .s-i').forEach(i => { i.style.fontSize='0.8em'; i.style.marginLeft='4px';});
+        }
+
+        function saveStateToLocalStorage() { try { localStorage.setItem('estimpro_appState', JSON.stringify(state)); } catch (e) { console.error("Err LS Save:", e); showNotification("Erreur sauvegarde session.", "error");} }
+        function loadStateFromLocalStorage() {
+            const savedState = localStorage.getItem('estimpro_appState');
+            if (savedState) {
+                try {
+                    const parsedState = JSON.parse(savedState);
+                    if (parsedState.appVersion === APP_VERSION) { Object.assign(state, parsedState); showNotification("Session précédente restaurée.", "info"); } 
+                    else { showNotification("Données incompatibles, réinitialisation.", "warning"); state.clientInfo = parsedState.clientInfo || {name:'', address:''}; localStorage.removeItem('estimpro_appState'); }
+                } catch (e) { console.error("Err LS Load:", e); showNotification("Erreur restauration session.", "error"); localStorage.removeItem('estimpro_appState'); }
+            }
+            refreshAllUI();
+        }
+        function refreshAllUI() {
+            if (state.currentSurfaces && state.currentSurfaces.dimensions) {
+                const roomNameEl = document.getElementById('roomName'); const roomTypeEl = document.getElementById('roomType');
+                if (roomNameEl) roomNameEl.value = state.currentSurfaces.roomName || ''; if (roomTypeEl) roomTypeEl.value = state.currentSurfaces.roomType || 'other';
+                Object.keys(state.currentSurfaces.dimensions).forEach(k => {const el=document.getElementById(k); if(el)el.value=state.currentSurfaces.dimensions[k];});
+                calculateSurfaces(); 
+            } else { 
+                const surfaceResultsEl = document.getElementById('surfaceResults'); if(surfaceResultsEl) surfaceResultsEl.style.display = 'none';
+                const roomNameEl = document.getElementById('roomName'); if (roomNameEl) roomNameEl.value = '';
+                const lengthEl = document.getElementById('length'); if(lengthEl) lengthEl.value = '';
+                const widthEl = document.getElementById('width'); if(widthEl) widthEl.value = '';
+                const heightEl = document.getElementById('height'); if(heightEl) heightEl.value = '2.50';
+            }
+            const clientNameEl = document.getElementById('clientName'); if(clientNameEl) clientNameEl.value = state.clientInfo.name || '';
+            const projectAddressEl = document.getElementById('projectAddress'); if(projectAddressEl) projectAddressEl.value = state.clientInfo.address || '';
+            updateCalculatedQuantitiesTableUI(); updateMaterialsTableUI(); updateEstimateUI(); loadSearchHistoryUI(); 
+            const calculatorTypeEl = document.getElementById('calculatorType'); if(calculatorTypeEl) calculatorTypeEl.value = ""; 
+            const calculatorForms = document.querySelectorAll('.calculator-form'); if(calculatorForms) calculatorForms.forEach(f => f.classList.remove('active')); 
+            const resultsDisplays = document.querySelectorAll('.results-display:not(#surfaceResults)'); if(resultsDisplays) resultsDisplays.forEach(r => {r.style.display = 'none'; r.innerHTML='';}); 
+            const calculatorPlaceholderEl = document.getElementById('calculatorPlaceholder'); if(calculatorPlaceholderEl) calculatorPlaceholderEl.style.display = 'block';
+        }
+        function resetApplicationState() {
+            const defaultState = { appVersion: APP_VERSION, materials: [], calculatedQuantities: [], currentSurfaces: null, clientInfo: { name: '', address: '' }, searchHistory: [] };
+            Object.assign(state, defaultState);
+            const fieldsToClear = ['roomName','length','width','materialDesc','materialQuantity','materialUnit','materialPackaging','materialPrice','materialSource','materialUrl','clientName','projectAddress','searchTerm','quickAddDesc','quickAddPrice','quickAddUnit','quickAddPackaging','quickAddSource','quickAddUrl','concreteLength','concreteWidth','concreteThickness','drywallSurface','plateWidth','plateHeight','drywallWaste','paintSurface','paintCoats','paintCoverage','tileAreaSurface','tileWidthDim','tileHeightDim','tileJointWidth','tileWaste','glueCoverage','groutDensity','floorAreaToCover','flooringItemWidth','flooringItemLength','flooringWaste','insRollArea','rollWidth','rollLength','insRollWaste','insPanelArea','panelWidth','panelLength','insPanelWaste'];
+            fieldsToClear.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+            if(document.getElementById('height')) document.getElementById('height').value='2.50'; 
+            if(document.getElementById('quickAddQuantity')) document.getElementById('quickAddQuantity').value='1';
+            ['drywallWaste','tileWaste','flooringWaste'].forEach(id => { if(document.getElementById(id)) document.getElementById(id).value = '10';});
+            ['insRollWaste','insPanelWaste'].forEach(id => { if(document.getElementById(id)) document.getElementById(id).value = '5';});
+            if(document.getElementById('plateWidth')) document.getElementById('plateWidth').value = '1.20'; if(document.getElementById('plateHeight')) document.getElementById('plateHeight').value = '2.50';
+            if(document.getElementById('paintCoverage')) document.getElementById('paintCoverage').value = '10'; if(document.getElementById('paintCoats')) document.getElementById('paintCoats').value = '2';
+            if(document.getElementById('tileJointWidth')) document.getElementById('tileJointWidth').value = '3';
+            if(document.getElementById('glueCoverage')) document.getElementById('glueCoverage').value = '4'; if(document.getElementById('groutDensity')) document.getElementById('groutDensity').value = '1.6';
+            if(document.getElementById('rollWidth')) document.getElementById('rollWidth').value = '1.20'; if(document.getElementById('rollLength')) document.getElementById('rollLength').value = '5.00';
+            if(document.getElementById('panelWidth')) document.getElementById('panelWidth').value = '0.60'; if(document.getElementById('panelLength')) document.getElementById('panelLength').value = '1.20';
+            ['surfaceResults','concreteResults','drywallResults','paintResults','tilesResults','flooringResults','insRollResults','insPanelResults'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+            if(document.getElementById('calculatorType')) document.getElementById('calculatorType').value=''; 
+            if(document.querySelectorAll('.calculator-form')) document.querySelectorAll('.calculator-form').forEach(f=>f.classList.remove('active')); 
+            if(document.getElementById('calculatorPlaceholder')) document.getElementById('calculatorPlaceholder').style.display='block';
+            localStorage.removeItem('estimpro_appState'); 
+            refreshAllUI();
+            showNotification('Nouveau projet. Données effacées.','success'); 
+            if(document.querySelector('.tab[data-tab="surfaces"]')) document.querySelector('.tab[data-tab="surfaces"]').click();
+        }
+
+        function downloadJSON(data, filename) { const jsonString = JSON.stringify(data, null, 2); const blob = new Blob([jsonString], { type: "application/json" }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); }
+        function saveFullProjectToJSON() { saveStateToLocalStorage(); downloadJSON(state, `EstimPro_Projet_${new Date().toISOString().slice(0,10)}.json`); showNotification("Projet sauvegardé en fichier JSON.", "success"); }
+        function handleProjectFileSelect(event) {
+            const file = event.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const loadedFullState = JSON.parse(e.target.result);
+                    if (loadedFullState.appVersion && loadedFullState.materials !== undefined && loadedFullState.calculatedQuantities !== undefined) {
+                        if (loadedFullState.appVersion !== APP_VERSION) { if (!confirm(`Fichier d'une version différente (${loadedFullState.appVersion || 'ancienne'}). Charger quand même?`)) { event.target.value = null; return; }}
+                        Object.assign(state, loadedFullState); saveStateToLocalStorage(); refreshAllUI(); showNotification("Projet chargé.", "success");
+                    } else { showNotification("Fichier JSON projet invalide.", "error"); }
+                } catch (error) { console.error("Err load Pjt file:", error); showNotification("Erreur lecture fichier projet.", "error"); } 
+                finally { event.target.value = null; }
+            };
+            reader.readAsText(file);
+        }
+        function saveEstimateDataToJSON() {
+            const estimateData = { appVersion: APP_VERSION, clientInfo: state.clientInfo, materials: state.materials, calculatedQuantities: state.calculatedQuantities, currentSurfaces: state.currentSurfaces };
+            downloadJSON(estimateData, `EstimPro_Devis_${(state.clientInfo.name || 'SansNom').replace(/[^a-z0-9]/gi, '_')}_${new Date().toISOString().slice(0,10)}.json`);
+            showNotification("Devis sauvegardé en JSON.", "success");
+        }
+        function handleEstimateFileSelect(event) {
+            const file = event.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const loadedEstimateData = JSON.parse(e.target.result);
+                    if (loadedEstimateData.appVersion && loadedEstimateData.materials !== undefined && loadedEstimateData.clientInfo !== undefined) {
+                        if (loadedEstimateData.appVersion !== APP_VERSION) { if (!confirm(`Fichier devis d'une version différente (${loadedEstimateData.appVersion || 'ancienne'}). Charger quand même?`)) { event.target.value = null; return; }}
+                        state.clientInfo = loadedEstimateData.clientInfo; state.materials = loadedEstimateData.materials;
+                        state.calculatedQuantities = loadedEstimateData.calculatedQuantities || []; 
+                        state.currentSurfaces = loadedEstimateData.currentSurfaces || null;
+                        saveStateToLocalStorage(); refreshAllUI(); 
+                        const estTab = document.querySelector('.tab[data-tab="estimate"]'); if(estTab) estTab.click();
+                        showNotification("Devis chargé.", "success");
+                    } else { showNotification("Fichier JSON devis invalide.", "error"); }
+                } catch (error) { console.error("Err load Est file:", error); showNotification("Erreur lecture fichier devis.", "error"); } 
+                finally { event.target.value = null; }
+            };
+            reader.readAsText(file);
+        }
+        function printEstimate() { 
+            updateEstimateUI(); 
+            showNotification("Préparation impression... Utilisez 'Enregistrer en PDF'.", "info"); 
+            setTimeout(() => { window.print(); }, 500); 
+        }
+        
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
